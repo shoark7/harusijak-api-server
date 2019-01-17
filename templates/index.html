@@ -9,6 +9,9 @@
     <h4><a href="{% url 'poet:logout' %}">로그아웃</a></h4>
     <p>Hello, {{ request.user.nickname }}</p>
     <p>Your last log in is {{ request.user.recent_visited_date }}</p>
+		{% if request.user.image %}
+			<img src="{{ request.user.image.url }}" alt="유저 사진">
+		{% endif %}
   {% else %}
     <p>Hello, Anonymous</p>
     <h4><a href="{% url 'poet:signin' %}">회원가입</a></h4>
