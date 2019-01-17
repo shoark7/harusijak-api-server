@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>회원정보 수정</title>
+</head>
+<body>
+  <form enctype="multipart/form-data" action="{% url 'poet:signin' %}" method="post">
+    {% csrf_token %} 
+    {{ form.as_p }}  
+    <input class="text" type="submit" name="" value="제출">
+  </form>
+</body>
+</html>
