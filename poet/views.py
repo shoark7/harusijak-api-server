@@ -2,10 +2,17 @@ from django.contrib.auth import authenticate
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import Http404
 
+from rest_framework import serializers
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
 
 from .models import Poet
 from .serializers import PoetSerializer, PoetCreateSerializer
@@ -16,6 +23,7 @@ class PoetList(APIView):
     List all poets, or create a new poet.
     """
     queryset = Poet.objects.all()
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None):
         poets = Poet.objects.all()
@@ -27,8 +35,8 @@ class PoetList(APIView):
 
     def post(self, request, format=None):
         if request.data['password'] != request.data['password_conf']:
-            raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
-        request.data.pop('password_conf')
+            return Response({'error': '비밀번호가 일치하지 않습니다.'},
+                            status=HTTP_400_BAD_REQUEST)
 
         serializer = PoetCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,19 +64,35 @@ class PoetDetail(APIView):
 
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
+        if poet != request.user:
+            return Response({'error': '본인이 아닙니다.'},
+                            status=HTTP_404_NOT_FOUND)
         serializer_context = {
             'request': request,
         }
+
         serializer = PoetSerializer(poet, context=serializer_context, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            poet.set_password(serializer.data['password'])
+            poet.save()
+            return Response({
+                             'pk': poet.pk,
+                             'identifier': poet.identifier,
+                             'nickname': poet.nickname,
+                             'image': poet.image or None,
+                             'description': poet.description or '',
+                            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk, format=None):
         poet = self.get_object(pk)
+        if poet != request.user:
+            return Response({'error': '본인이 아닙니다.'},
+                            status=HTTP_400_BAD_REQUEST)
         poet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 
 # class AuthView(APIView):

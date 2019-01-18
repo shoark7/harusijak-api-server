@@ -38,4 +38,4 @@ def login(request):
 @api_view(["GET"])
 def logout(request):
     request.user.auth_token.delete()
-    return Response('Successfully logged out')
+    return Response({'message': 'Successfully logged out'}, status=HTTP_200_OK)
