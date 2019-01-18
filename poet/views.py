@@ -1,5 +1,5 @@
-from django.contrib.auth import authenticate, logout, login
-from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import Http404
 
 from rest_framework.views import APIView
@@ -16,7 +16,6 @@ class PoetList(APIView):
     List all poets, or create a new poet.
     """
     queryset = Poet.objects.all()
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         poets = Poet.objects.all()
@@ -72,49 +71,52 @@ class PoetDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# class AuthView(APIView):
+    # queryset = Poet.objects.all()
+
+    # def post(self, request, format=None):
+        # try:
+            # identifier = request.POST['identifier']
+            # password = request.POST['password']
+        # except:
+            # raise serializer.ValidationError("아이디와 비밀번호를 입력하세요.")
+
+        # poet = authenticate(request, identifier=identifier, password=password)
+        # poet.save()
+        # if poet is not None:
+            # return Response(poet.token, status=status.HTTP_204_NO_CONTENT)
+        # else:
+            # raise serializer.ValidationError("정보가 없습니다.")
 
 
 
+# def log_in(request):
+    # if request.method == 'GET':
+        # form = PoetLoginForm()
+    # else:
+        # identifier = request.POST['identifier']
+        # password = request.POST['password']
+
+        # poet = authenticate(request, identifier=identifier, password=password)
+        # if poet is not None:
+            # login(request, poet)
+            # return redirect('index')
+        # else:
+            # form = PoetLoginForm(request.POST)
+            # """로그인 실패시 데이터 출력이 필요"""
+    # return render(request, 'poet/poet_login.html', {'form': form})
 
 
-
-
-
-
-
-
-def log_out(request):
-    logout(request)
-    return redirect('index')
-
-
-def log_in(request):
-    if request.method == 'GET':
-        form = PoetLoginForm()
-    else:
-        identifier = request.POST['identifier']
-        password = request.POST['password']
-
-        poet = authenticate(request, identifier=identifier, password=password)
-        if poet is not None:
-            login(request, poet)
-            return redirect('index')
-        else:
-            form = PoetLoginForm(request.POST)
-            """로그인 실패시 데이터 출력이 필요"""
-    return render(request, 'poet/poet_login.html', {'form': form})
-
-
-def sign_in(request):
-    if request.method == 'GET':
-        form = PoetCreationForm()
-    else:
-        form = PoetCreationForm(request.POST, request.FILES)
-        if form.is_valid():
-            poet = form.save()
-            login(request, poet)
-            return redirect('index')
-    return render(request, 'poet/poet_signin.html', {'form': form})
+# def sign_in(request):
+    # if request.method == 'GET':
+        # form = PoetCreationForm()
+    # else:
+        # form = PoetCreationForm(request.POST, request.FILES)
+        # if form.is_valid():
+            # poet = form.save()
+            # login(request, poet)
+            # return redirect('index')
+    # return render(request, 'poet/poet_signin.html', {'form': form})
 
 
 """
