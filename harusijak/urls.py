@@ -16,10 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from . import views
+from rest_framework import routers, serializers, viewsets
 
+from . import views
+from poet.models import Poet
+from poet.serializers import PoetViewSet
+
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+# router.register('poets', PoetViewSet)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    # path('', views.index, name='index'),
     path('poets/', include('poet.urls')),
 ]

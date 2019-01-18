@@ -3,9 +3,11 @@ from django.db import models
 
 
 class PoetManager(BaseUserManager):
-    def create_user(self, identifier, nickname, description=None, image=None, password=None):
-        if not identifier or not nickname:
+    def create_user(self, identifier, nickname, password, description=None, image=None, *args, **kwargs):
+        if not identifier or not nickname or not password:
             raise ValueError("Nickname and identifier should not be empty")
+        # elif password != password_conf:
+            # raise ValueError("Password don't match")
 
         poet = self.model(
             identifier=identifier,
@@ -44,7 +46,7 @@ class Poet(AbstractBaseUser):
     USERNAME_FIELD = 'identifier'
     REQUIRED_FIELDS = ['nickname']
 
-    def has_perm(self, perm, obj=None):
+    def has_perms(self, perm, obj=None):
         return True
 
     def has_module_perms(self, app_label):
