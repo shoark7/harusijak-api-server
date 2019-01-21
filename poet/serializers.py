@@ -1,6 +1,14 @@
 from rest_framework import routers, serializers, viewsets
 
 from .models import Poet
+from poem.serializers import PoemSerializer
+from poem.models import Poem
+
+
+class SimplePoetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poet
+        fields = ('id', 'nickname',)
 
 
 class PoetSerializer(serializers.Serializer):
@@ -10,11 +18,11 @@ class PoetSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     image = serializers.ImageField(max_length=None, allow_empty_file=True,
                                   required=False, use_url=True)
+    poems = PoemSerializer(many=True)
 
     def update(self, instance, validated_data):
         instance.identifier = validated_data.get('identifier', instance.identifier)
         instance.nickname = validated_data.get('nickname', instance.nickname)
-        # instance.set_password(validated_data.get('password', instance.password))
         instance.password = validated_data.get('password', instance.password)
         instance.image = validated_data.get('image', instance.image)
         instance.description = validated_data.get('description', instance.description)
@@ -39,15 +47,6 @@ class PoetCreateSerializer(serializers.Serializer):
         return poet
 
 
-
 class PoetViewSet(viewsets.ModelViewSet):
     queryset = Poet.objects.all()
     serializer_class = PoetSerializer
-
-
-    """
-{"identifier": "fjalfkasdf",
-"password_conf": "asdfasdfljkjasdf",
-"password": "asdfasdfljkjasdf",
-"nickname": "afjalfkjsdlf"}
-    """
