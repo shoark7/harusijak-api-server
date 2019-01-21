@@ -14,5 +14,5 @@ class PoemSerializer(serializers.HyperlinkedModelSerializer):
     writer = SimplePoetSerializer(required=False)
     class Meta:
         model = Poem
-        fields = ('url', 'id', 'title', 'content', 'subject', 'writer', 'written_date', 'likes',
-                  'dislikes', 'displayed')
+        fields = ('url', 'id', 'title', 'content', 'subject', 'writer', 'written_date',
+                  'written_time', 'likes', 'dislikes', 'displayed')

@@ -14,8 +14,8 @@ from rest_framework.status import (
 )
 
 from .models import Poet
-from .serializers import PoetCreateSerializer, PoetSerializer
 from .permissons import IsOneselfOrReadOnly
+from .serializers import PoetCreateSerializer, PoetSerializer
 
 
 class PoetList(APIView):

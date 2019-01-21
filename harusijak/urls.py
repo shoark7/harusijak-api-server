@@ -20,7 +20,6 @@ from rest_framework import routers, serializers, viewsets
 
 from . import views
 from poet.models import Poet
-from poet.serializers import PoetViewSet
 
 
 # Routers provide an easy way of automatically determining the URL conf.

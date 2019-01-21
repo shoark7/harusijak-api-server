@@ -46,7 +46,7 @@ class Poet(AbstractBaseUser):
     USERNAME_FIELD = 'identifier'
     REQUIRED_FIELDS = ['nickname']
 
-    def has_perms(self, perm, obj=None):
+    def has_perm(self, perm, obj=None):
         return True
 
     def has_module_perms(self, app_label):

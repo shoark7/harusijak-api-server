@@ -1,8 +1,8 @@
 from rest_framework import routers, serializers, viewsets
 
 from .models import Poet
-from poem.serializers import PoemSerializer
 from poem.models import Poem
+from poem.serializers import PoemSerializer
 
 
 class SimplePoetSerializer(serializers.ModelSerializer):
@@ -42,11 +42,6 @@ class PoetCreateSerializer(serializers.Serializer):
         try:
             poet = Poet.objects.create_user(**validated_data)
         except:
-            raise serializers.ValidationError("문제가 있습니다. 정확히 정보를 입력해주십시오.")
-
+            raise serializers.ValidationError("ID 또는 Nickname이 중복되거나 다른 필드에 문제가"
+                                              "있습니다. 다시 입력하세요.")
         return poet
-
-
-class PoetViewSet(viewsets.ModelViewSet):
-    queryset = Poet.objects.all()
-    serializer_class = PoetSerializer

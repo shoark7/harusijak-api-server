@@ -25,3 +25,6 @@ class Poem(models.Model):
                  'writer': self.writer.id,
                  'subject': self.subject,
                 }
+
+    class Meta:
+        ordering = ['-written_date', '-written_time',]
