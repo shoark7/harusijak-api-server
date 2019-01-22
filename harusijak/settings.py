@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import json
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'poet',
     'poem',
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
 ]
 
 
@@ -60,6 +62,7 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,15 +147,46 @@ AUTH_USER_MODEL = 'poet.Poet'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 APPEND_SLASH = False
 
 # Heroku setting
 import django_heroku
 django_heroku.settings(locals())
+
+
+## S3 setting. It's long
+conf_path = os.path.join(BASE_DIR, '.conf', 'secrets.json')
+secrets = json.load(open(conf_path))
+
+AWS_ACCESS_KEY_ID = secrets['s3']['accessKey']
+AWS_SECRET_ACCESS_KEY = secrets['s3']['secretKey']
+AWS_STORAGE_BUCKET_NAME = 'harusijak-static-manage'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+AWS_STATIC_LOCATION = 'static'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+
+AWS_MEDIA_LOCATION = 'media'
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
+
+AWS_POET_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poets/'
+POET_FILE_STORAGE = 'harusijak.storage_backends.PoetMediaStorage'
+
+AWS_POEM_EDIA_LOCATION = 'media/poems/'
+POEM_FILE_STORAGE = 'harusijak.storage_backends.PoemMediaStorage'
+
+
+
+## CORS
+CORS_ORIGIN_ALLOW_ALL = True

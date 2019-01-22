@@ -14,6 +14,9 @@ gunicorn = "*"
 djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
+"boto3" = "*"
+django-storages = "*"
+django-cors-headers = "*"
 
 
 [dev-packages]

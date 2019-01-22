@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+from harusijak.storage_backends import PoetMediaStorage
+
 
 class PoetManager(BaseUserManager):
     def create_user(self, identifier, nickname, password, description=None, image=None, *args, **kwargs):
@@ -34,7 +36,8 @@ class Poet(AbstractBaseUser):
     identifier = models.CharField('ID', max_length=30, unique=True)
     nickname = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=50, blank=True, null=True)
-    image = models.ImageField(upload_to='user_image/', blank=True, null=True)
+    image = models.ImageField(storage=PoetMediaStorage(), blank=True, null=True)
+    # image = models.ImageField(upload_to='user_image/', blank=True, null=True)
     joined_date = models.DateField(auto_now_add=True)
     recent_visited_date = models.DateTimeField(auto_now=True)
     do_get_email = models.BooleanField(default=False)
