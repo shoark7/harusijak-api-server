@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 
-from rest_framework import mixins, generics, serializers, status
+from rest_framework import generics, mixins, serializers, status
 from rest_framework.response import Response
 
 from .models import Poem
@@ -37,7 +37,7 @@ class PoemDetail(mixins.RetrieveModelMixin,
     def get_object(self, pk):
         try:
             return Poem.objects.get(pk=pk)
-        except Poem.DoesNotExist:
+        except:
             raise Http404
 
     def get(self, request, pk):

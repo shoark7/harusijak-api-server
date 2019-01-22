@@ -1,10 +1,10 @@
 from django.urls import include, path
 
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers
 
 from . import views
-from poet.models import Poet
 from poem.models import Poem
+from poet.models import Poet
 
 
 urlpatterns = [

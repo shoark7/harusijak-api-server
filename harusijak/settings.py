@@ -188,6 +188,5 @@ AWS_POEM_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poems/'
 POEM_FILE_STORAGE = 'harusijak.storage_backends.PoemMediaStorage'
 
 
-
 ## CORS
 CORS_ORIGIN_ALLOW_ALL = True

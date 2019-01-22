@@ -1,4 +1,4 @@
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers
 
 from poet.models import Poet
 from .models import Poem
