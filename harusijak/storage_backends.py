@@ -11,4 +11,4 @@ class PoetMediaStorage(S3Boto3Storage):
 
 
 class PoemMediaStorage(S3Boto3Storage):
-    location = settings.AWS_POEM_EDIA_LOCATION
+    location = settings.AWS_POEM_MEDIA_LOCATION
