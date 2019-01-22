@@ -178,7 +178,8 @@ STATICFILES_STORAGE = 'harusijak.storage_backends.StaticStorage'
 STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
 
 AWS_MEDIA_LOCATION = 'media'
-MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
+# MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
+MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
 AWS_POET_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poets/'
 POET_FILE_STORAGE = 'harusijak.storage_backends.PoetMediaStorage'
