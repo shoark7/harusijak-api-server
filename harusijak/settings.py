@@ -183,7 +183,7 @@ MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
 AWS_POET_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poets/'
 POET_FILE_STORAGE = 'harusijak.storage_backends.PoetMediaStorage'
 
-AWS_POEM_EDIA_LOCATION = 'media/poems/'
+AWS_POEM_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poems/'
 POEM_FILE_STORAGE = 'harusijak.storage_backends.PoemMediaStorage'
 
 
