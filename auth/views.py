@@ -30,7 +30,7 @@ def login(request):
                      'pk': user.pk,
                      'identifier': user.identifier,
                      'nickname': user.nickname,
-                     'image': user.image or None,
+                     'image': user.image.url or None,
                      'description': user.description or '',
                     },
                     status=HTTP_200_OK)
