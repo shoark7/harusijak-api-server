@@ -16,8 +16,8 @@ from rest_framework.status import (
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login(request):
-    identifier = request.data.get("identifier")
-    password = request.data.get("password")
+    identifier = request.data.get("identifier").strip()
+    password = request.data.get("password").strip()
     if identifier is None or password is None:
         return Response({'error': 'Please provide both identifier and password'},
                         status=HTTP_400_BAD_REQUEST)
@@ -30,7 +30,7 @@ def login(request):
                      'pk': user.pk,
                      'identifier': user.identifier,
                      'nickname': user.nickname,
-                     'image': user.image.url or None,
+                     'image': user.image.url if user.image else None,
                      'description': user.description or '',
                     },
                     status=HTTP_200_OK)

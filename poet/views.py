@@ -14,8 +14,12 @@ from rest_framework.status import (
 )
 
 from .models import Poet
-from .permissons import IsOneselfOrReadOnly
+from .permissons import IsOneself, IsOneselfOrReadOnly
 from .serializers import PoetCreateSerializer, PoetSerializer
+
+
+
+
 
 
 class PoetList(APIView):
@@ -44,7 +48,7 @@ class PoetList(APIView):
 
 class PoetDetail(APIView):
     queryset = Poet.objects.all()
-    permission_classes = (IsOneselfOrReadOnly,)
+    permission_classes = (IsOneself,)
 
     def get_object(self, pk):
         try:
@@ -52,6 +56,7 @@ class PoetDetail(APIView):
         except Poet.DoesNotExist:
             raise Http404
 
+    """
     def get(self, request, pk, format=None):
         poet = self.get_object(pk)
         serializer_context = {
@@ -59,6 +64,7 @@ class PoetDetail(APIView):
         }
         serializer = PoetSerializer(poet, context=serializer_context)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    """
 
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
@@ -85,3 +91,20 @@ class PoetDetail(APIView):
         self.check_object_permissions(request, poet)
         poet.delete()
         return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+@api_view(["GET"])
+@permission_classes((IsOneself,))
+def current_user(request):
+    user = request.user
+    if not request.user.is_authenticated:
+        raise serializers.ValidationError("로그인해야 합니다")
+    return Response({
+                     'pk': user.pk,
+                     'identifier': user.identifier,
+                     'nickname': user.nickname,
+                     'image': user.image.url if user.image else None,
+                     'description': user.description or '',
+                    },
+                    status=HTTP_200_OK)
