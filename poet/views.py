@@ -18,10 +18,6 @@ from .permissons import IsOneself, IsOneselfOrReadOnly
 from .serializers import PoetCreateSerializer, PoetSerializer
 
 
-
-
-
-
 class PoetList(APIView):
     queryset = Poet.objects.all()
     permission_classes = (AllowAny,)

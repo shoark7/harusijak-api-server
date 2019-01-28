@@ -31,7 +31,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('poets/', include('poet.urls')),
+    path('users/', include('poet.urls')),
     path('poems/', include('poem.urls')),
     path('auth/', include('auth.urls')),
 ]
