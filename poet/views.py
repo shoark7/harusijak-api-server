@@ -3,12 +3,14 @@ from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
 
 from rest_framework import serializers, status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import (
     HTTP_200_OK,
+    HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
 )
@@ -37,8 +39,17 @@ class PoetList(APIView):
 
         serializer = PoetCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key,
+                             'pk': user.pk,
+                             'identifier': user.identifier,
+                             'nickname': user.nickname,
+                             'image': user.image.url if user.image else None,
+                             'description': user.description or '',
+                            },
+                            status=HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
