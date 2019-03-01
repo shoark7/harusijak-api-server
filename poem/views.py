@@ -68,8 +68,10 @@ class PoemDetail(mixins.RetrieveModelMixin,
         serializer = PoemSerializer(poem, context=serializer_context)
 
         data = dict(serializer.data)
-        data['do_like'] = Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
-        data['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
+        data['do_like'] = request.user.is_authenticated and \
+                            Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
+        data['do_dislike'] = request.user.is_authenticated and \
+                            Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
         return Response(data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
