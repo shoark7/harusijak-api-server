@@ -102,7 +102,7 @@ class PoetDetail(APIView):
 
 
 @api_view(["GET"])
-@permission_classes((IsOneself,))
+@permission_classes((IsAuthenticated,))
 def current_user(request):
     user = request.user
     if not request.user.is_authenticated:
