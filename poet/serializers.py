@@ -28,6 +28,11 @@ class PoetSerializer(serializers.Serializer):
         instance.description = validated_data.get('description', instance.description)
         return instance
 
+# class PoetSerializer(serializers.HyperlinkedModelSerializer):
+    # class Meta:
+        # model = Poet
+        # fields = '__all__'
+
 
 class PoetCreateSerializer(serializers.Serializer):
     identifier = serializers.CharField()

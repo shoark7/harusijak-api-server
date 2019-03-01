@@ -8,8 +8,6 @@ class PoetManager(BaseUserManager):
     def create_user(self, identifier, nickname, password, description=None, image=None, *args, **kwargs):
         if not identifier or not nickname or not password:
             raise ValueError("Nickname and identifier should not be empty")
-        # elif password != password_conf:
-            # raise ValueError("Password don't match")
 
         poet = self.model(
             identifier=identifier,
@@ -37,7 +35,6 @@ class Poet(AbstractBaseUser):
     nickname = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(storage=PoetMediaStorage(), blank=True, null=True)
-    # image = models.ImageField(upload_to='user_image/', blank=True, null=True)
     joined_date = models.DateField(auto_now_add=True)
     recent_visited_date = models.DateTimeField(auto_now=True)
     do_get_email = models.BooleanField(default=False)
@@ -47,7 +44,7 @@ class Poet(AbstractBaseUser):
 
     objects = PoetManager()
     USERNAME_FIELD = 'identifier'
-    REQUIRED_FIELDS = ['nickname']
+    REQUIRED_FIELDS = ['nickname',]
 
     def has_perm(self, perm, obj=None):
         return True

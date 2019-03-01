@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 
 from rest_framework import generics, mixins, serializers, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .models import Dislike, Like, Poem
@@ -16,6 +16,7 @@ class PoemList(mixins.ListModelMixin,
                   generics.GenericAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
