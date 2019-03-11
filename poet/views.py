@@ -26,31 +26,26 @@ class PoetList(APIView):
 
     def get(self, request, format=None):
         poets = Poet.objects.all()
-        serializer_context = {
-            'request': request,
-        }
+        serializer_context = {'request': request}
         serializer = PoetSerializer(poets, context=serializer_context, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        if request.data.get('password') != request.data.get('password_conf'):
-            return Response({'error': '비밀번호가 일치하지 않습니다.'},
-                            status=HTTP_400_BAD_REQUEST)
-
-        serializer = PoetCreateSerializer(data=request.data)
+        # serializer = PoetCreateSerializer(data=request.data)
+        serializer = PoetSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key,
                              'pk': user.pk,
                              'identifier': user.identifier,
                              'nickname': user.nickname,
                              'image': user.image.url if user.image else None,
-                             'description': user.description or '',
+                             'description': user.description or None
                             },
                             status=HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PoetDetail(APIView):
@@ -63,33 +58,25 @@ class PoetDetail(APIView):
         except Poet.DoesNotExist:
             raise Http404
 
-    """
     def get(self, request, pk, format=None):
         poet = self.get_object(pk)
-        serializer_context = {
-            'request': request,
-        }
+        serializer_context = {'request': request}
         serializer = PoetSerializer(poet, context=serializer_context)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    """
 
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
         self.check_object_permissions(request, poet)
         serializer_context = {'request': request}
-        serializer = PoetSerializer(poet, context=serializer_context, data=request.data)
+        serializer = PoetSerializer(poet, context={'request': request}, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            poet.set_password(serializer.data['password'])
-            poet.save()
-            return Response({
-                             'pk': poet.pk,
-                             'identifier': poet.identifier,
-                             'nickname': poet.nickname,
-                             'image': poet.image or None,
-                             'description': poet.description or '',
-                            }, status=status.HTTP_200_OK)
+            # 비밀번호 변경 시의 로직은 따로 구현하거나 해야 할듯.
+            if hasattr(serializer.data, 'password'):
+                poet.set_password(serializer.data['password'])
+                poet.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
