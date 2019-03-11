@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+# from django.contrib.auth import get_user_model
 from poet.models import Poet
 
 from harusijak.storage_backends import PoemMediaStorage

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+# from poem.models import Poem
 from harusijak.storage_backends import PoetMediaStorage
 
 
@@ -38,6 +39,11 @@ class Poet(AbstractBaseUser):
     joined_date = models.DateField(auto_now_add=True)
     recent_visited_date = models.DateTimeField(auto_now=True)
     do_get_email = models.BooleanField(default=False)
+
+    # Many to many relations
+    subscribing_to = models.ManyToManyField("self", related_name='subscribed_by', blank=True,
+                                            symmetrical=False)
+    favorite_poems = models.ManyToManyField('poem.Poem', related_name='keeped_by', blank=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

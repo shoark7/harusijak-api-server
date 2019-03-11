@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
 
-from rest_framework import serializers, status
+from rest_framework import generics, mixins, serializers, status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -16,8 +16,10 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from .models import Poet
-from .permissons import IsOneself, IsOneselfOrReadOnly
-from .serializers import PoetCreateSerializer, PoetSerializer
+from .permissons import IsOneself, IsOneselfOrReadOnly, ReadOnly
+from .serializers import PoetSerializer
+from poem.models import Poem
+from poem.serializers import PoemSerializer
 
 
 class PoetList(APIView):
@@ -26,12 +28,10 @@ class PoetList(APIView):
 
     def get(self, request, format=None):
         poets = Poet.objects.all()
-        serializer_context = {'request': request}
-        serializer = PoetSerializer(poets, context=serializer_context, many=True)
+        serializer = PoetSerializer(poets, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        # serializer = PoetCreateSerializer(data=request.data)
         serializer = PoetSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -50,24 +50,25 @@ class PoetList(APIView):
 
 class PoetDetail(APIView):
     queryset = Poet.objects.all()
-    permission_classes = (IsOneself,)
+    permission_classes = (IsOneselfOrReadOnly,)
 
     def get_object(self, pk):
         try:
-            return Poet.objects.get(pk=pk)
+            poet = Poet.objects.get(pk=pk)
         except Poet.DoesNotExist:
             raise Http404
+        else:
+            self.check_object_permissions(self.request, poet)
+            return poet
 
     def get(self, request, pk, format=None):
         poet = self.get_object(pk)
-        serializer_context = {'request': request}
-        serializer = PoetSerializer(poet, context=serializer_context)
+        serializer = PoetSerializer(poet, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
         self.check_object_permissions(request, poet)
-        serializer_context = {'request': request}
         serializer = PoetSerializer(poet, context={'request': request}, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -87,13 +88,35 @@ class PoetDetail(APIView):
         return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 
+# @api_view(["GET"])
+# @permission_classes((ReadOnly,))
+# def poems_of(request, pk):
+    # poems = Poem.objects.filter(writer=pk)
+    # serializer = PoemSerializer(poems, context={'request': request}, many=True)
+    # return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class Poems_of(mixins.ListModelMixin,
+               generics.GenericAPIView):
+    # queryset = Poem.objects.all()
+    serializer_class = PoemSerializer
+    permission_classes = (ReadOnly,)
+
+    def get_queryset(self, pk):
+        poet = get_object_or_404(Poet, pk=pk)
+        return poet.poems.all()
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset(kwargs['pk']))
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(queryset, many=True)
+        return self.get_paginated_response(serializer.data) if page else Response(serializer.data)
+
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def current_user(request):
     user = request.user
-    if not request.user.is_authenticated:
-        raise serializers.ValidationError("로그인해야 합니다")
     return Response({
                      'pk': user.pk,
                      'identifier': user.identifier,

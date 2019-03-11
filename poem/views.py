@@ -21,25 +21,15 @@ class PoemList(mixins.ListModelMixin,
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            data = list(serializer.data)
-            for item in data:
-                item['do_like'] = request.user.is_authenticated and \
-                                    Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-                item['do_dislike'] = request.user.is_authenticated and \
-                                    Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-            return self.get_paginated_response(data)
+        serializer = self.get_serializer(page, many=True)
+        data = list(serializer.data)
+        for item in data:
+            item['do_like'] = request.user.is_authenticated and \
+                                Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
+            item['do_dislike'] = request.user.is_authenticated and \
+                                Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
+        return self.get_paginated_response(data) if page else Response(data)
 
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-            data = list(serializer.data)
-            for item in data:
-                item['do_like'] = request.user.is_authenticated and \
-                                        Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-                item['do_dislike'] = request.user.is_authenticated and \
-                                        Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-            return Response(data)
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
