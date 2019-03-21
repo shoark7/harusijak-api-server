@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'storages',
 
+    'date',
     'poet',
     'poem',
+    'subject',
 ]
 
 

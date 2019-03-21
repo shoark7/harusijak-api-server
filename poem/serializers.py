@@ -12,7 +12,22 @@ class SimplePoetSerializer(serializers.HyperlinkedModelSerializer):
 
 class PoemSerializer(serializers.HyperlinkedModelSerializer):
     writer = SimplePoetSerializer(required=False)
+    subject = serializers.SerializerMethodField()
+    written_date = serializers.SerializerMethodField()
+
+    def get_written_date(self, obj):
+        return obj.written_date.__str__()
+
+    def get_subject(self, obj):
+        return obj.written_date.subject.__str__()
+
+
     class Meta:
         model = Poem
-        fields = ('url', 'id', 'title', 'content', 'subject', 'writer', 'written_date',
+        # fields = ('url', 'id', 'title', 'content', 'writer',
+                  # 'written_time', 'displayed', 'likes', 'dislikes',)
+        fields = ('url', 'id', 'title', 'content', 'writer', 'subject', 'written_date',
                   'written_time', 'displayed', 'likes', 'dislikes',)
+
+        # 'subject' is needed
+        # 'written_date' is needed
