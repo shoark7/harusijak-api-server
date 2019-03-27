@@ -209,6 +209,4 @@ REST_FRAMEWORK = {
 
 import dj_database_url
 
-# DATABASE_URL = 'postgres://gdoqfutxywvgmg:a9377fbc4fb38927ee47c6199e784124158b0110b728e19c199bbbd52af230c1@ec2-107-22-162-8.compute-1.amazonaws.com:5432/dfioanc1psc2cm'
-
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
