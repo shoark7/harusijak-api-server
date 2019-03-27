@@ -1,3 +1,5 @@
+from datetime import date as dt
+
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
@@ -9,6 +11,7 @@ from rest_framework.response import Response
 from .models import Dislike, Like, Poem
 from .serializers import PoemSerializer
 from .permissions import IsWriterOrReadOnly
+from date.models import Date
 
 
 class PoemList(mixins.ListModelMixin,
@@ -35,7 +38,10 @@ class PoemList(mixins.ListModelMixin,
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(writer=self.request.user)
+        today = dt.today()
+        date = Date.get_or_create(today)
+        serializer.save(written_date=date, writer=self.request.user)
+        # serializer.save(date=date)
         serializer.save(displayed=True)
 
 

@@ -89,10 +89,22 @@ WSGI_APPLICATION = 'harusijak.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dfioanc1psc2cm',
+        'USER': 'gdoqfutxywvgmg',
+        'PASSWORD': 'a9377fbc4fb38927ee47c6199e784124158b0110b728e19c199bbbd52af230c1',
+        'HOST': 'ec2-107-22-162-8.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
+
+# locally
+# DATABASES = {
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+# }
 
 
 # Password validation

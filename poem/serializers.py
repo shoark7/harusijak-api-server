@@ -26,7 +26,7 @@ class PoemSerializer(serializers.HyperlinkedModelSerializer):
         model = Poem
         # fields = ('url', 'id', 'title', 'content', 'writer',
                   # 'written_time', 'displayed', 'likes', 'dislikes',)
-        fields = ('url', 'id', 'title', 'content', 'writer', 'subject', 'written_date',
+        fields = ('url', 'id', 'title', 'content', 'writer', 'subject', 'written_date', 'align',
                   'written_time', 'displayed', 'likes', 'dislikes',)
 
         # 'subject' is needed
