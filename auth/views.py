@@ -12,7 +12,7 @@ from rest_framework.status import (
 )
 
 
-@csrf_exempt
+# @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login(request):
