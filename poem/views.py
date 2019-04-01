@@ -41,7 +41,6 @@ class PoemList(mixins.ListModelMixin,
         today = dt.today()
         date = Date.get_or_create(today)
         serializer.save(written_date=date, writer=self.request.user)
-        # serializer.save(date=date)
         serializer.save(displayed=True)
 
 
@@ -124,3 +123,13 @@ def toggle_dislike(request, pk):
         poem.dislikes += 1
         poem.save()
         return Response({"message": "Successfully Dislike toggled on"}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def about_today(request):
+    today = Date.get_or_create()
+    return Response({'날짜': today.date,
+                     '주제': today.subject.subject,
+                     '가이드 형식': today.subject.guide_format,
+                     '가이드 타입': today.subject.guide_type,
+                     '쓰여진 시': today.poem_set.count()})

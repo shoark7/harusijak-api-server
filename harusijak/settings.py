@@ -84,28 +84,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'harusijak.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dfioanc1psc2cm',
-        'USER': 'gdoqfutxywvgmg',
-        'PASSWORD': 'a9377fbc4fb38927ee47c6199e784124158b0110b728e19c199bbbd52af230c1',
-        'HOST': 'ec2-107-22-162-8.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
-
-# locally
-# DATABASES = {
-    # 'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -207,6 +185,28 @@ REST_FRAMEWORK = {
 }
 
 
-import dj_database_url
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'dfioanc1psc2cm',
+            'USER': 'gdoqfutxywvgmg',
+            'PASSWORD': 'a9377fbc4fb38927ee47c6199e784124158b0110b728e19c199bbbd52af230c1',
+            'HOST': 'ec2-107-22-162-8.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
+    import dj_database_url
+
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
