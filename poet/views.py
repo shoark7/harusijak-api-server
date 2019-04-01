@@ -35,6 +35,8 @@ class PoetList(APIView):
         serializer = PoetSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            user.set_password(user.password)
+            user.save()
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key,
                              'pk': user.pk,
