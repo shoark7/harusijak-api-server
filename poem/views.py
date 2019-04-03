@@ -128,8 +128,8 @@ def toggle_dislike(request, pk):
 @api_view(['GET'])
 def about_today(request):
     today = Date.get_or_create()
-    return Response({'날짜': today.date,
-                     '주제': today.subject.subject,
-                     '가이드 형식': today.subject.guide_format,
-                     '가이드 타입': today.subject.guide_type,
-                     '쓰여진 시': today.poem_set.count()})
+    return Response({'date': today.date,
+                     'subject': today.subject.subject,
+                     'guide_format': today.subject.guide_format,
+                     'guide_type': today.subject.guide_type,
+                     'count_of_poems_written': today.poem_set.count()})
