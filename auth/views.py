@@ -18,7 +18,6 @@ from rest_framework.status import (
 def login(request):
     identifier = request.data.get("identifier", None)
     password = request.data.get("password", None)
-    print(identifier, password)
     if identifier is None or password is None:
         return Response({'error': 'Please provide correct identifier and password'},
                         status=HTTP_400_BAD_REQUEST)

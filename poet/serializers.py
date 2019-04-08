@@ -55,7 +55,7 @@ class PoetSerializer(BasePoetSerializer):
 
     class Meta:
         model = Poet
-        fields = ['url', 'pk', 'identifier', 'password', 'nickname',
+        fields = ['url', 'pk', 'identifier', 'nickname', 'password',
                   'image', 'description',
 
                   'poems_all_count', 'poems_displayed_count', 'subscribed_count',

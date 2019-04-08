@@ -75,10 +75,10 @@ class PoetDetail(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            # 비밀번호 변경 시의 로직은 따로 구현하거나 해야 할듯.
-            if hasattr(serializer.data, 'password'):
+            if 'password' in serializer.data:
                 poet.set_password(serializer.data['password'])
                 poet.save()
+                serializer = PoetSerializer(poet, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
