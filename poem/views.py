@@ -41,7 +41,7 @@ class PoemList(mixins.ListModelMixin,
         today = dt.today()
         date = Date.get_or_create(today)
         serializer.save(written_date=date, writer=self.request.user)
-        serializer.save(displayed=True)
+        # serializer.save(displayed=True)
 
 
 class PoemDetail(mixins.RetrieveModelMixin,
