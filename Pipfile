@@ -19,6 +19,7 @@ django-storages = "*"
 django-cors-headers = "*"
 "psycopg2-binary" = "*"
 dj-database-url = "*"
+"urllib3" = ">=1.24.2"
 
 
 [dev-packages]
