@@ -84,10 +84,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'harusijak.wsgi.application'
 
 
-
 # Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
+# API server doesn't provide password validation
 AUTH_PASSWORD_VALIDATORS = [
     # {
         # 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -106,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
-
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
@@ -123,16 +120,6 @@ AUTH_USER_MODEL = 'poet.Poet'
 
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-# STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# Media files
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 APPEND_SLASH = False
 
 # Heroku setting
@@ -140,7 +127,7 @@ import django_heroku
 django_heroku.settings(locals())
 
 
-## S3 setting. It's long
+# S3 setting. It's long
 AWS_STORAGE_BUCKET_NAME = 'harusijak-static-manage'
 AWS_ACCESS_KEY_ID = os.environ['AwsAccessKey']
 AWS_SECRET_ACCESS_KEY = os.environ['AwsSecretKey']
@@ -164,14 +151,13 @@ AWS_POEM_MEDIA_LOCATION = AWS_MEDIA_LOCATION + '/poems/'
 POEM_FILE_STORAGE = 'harusijak.storage_backends.PoemMediaStorage'
 
 
-## CORS
+# CORS
 CORS_ORIGIN_ALLOW_ALL = True
 
 
-## Restframework 
+# django-restframework 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication',
         'auth.custom_token.CustomTokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
@@ -184,14 +170,13 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-if 'DATABASE_URL' in os.environ:
+if 'DATABASE_URL' in os.environ and 'DATABASE_PASSWORD' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'dfioanc1psc2cm',
             'USER': 'gdoqfutxywvgmg',
-            'PASSWORD': 'a9377fbc4fb38927ee47c6199e784124158b0110b728e19c199bbbd52af230c1',
+            'PASSWORD': os.environ['DATABASE_PASSWORD'],
             'HOST': 'ec2-107-22-162-8.compute-1.amazonaws.com',
             'PORT': '5432',
         }
@@ -206,4 +191,3 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-
