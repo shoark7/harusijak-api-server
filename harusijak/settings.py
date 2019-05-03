@@ -141,11 +141,6 @@ django_heroku.settings(locals())
 
 
 ## S3 setting. It's long
-conf_path = os.path.join(BASE_DIR, '.conf', 'secrets.json')
-# secrets = json.load(open(conf_path))
-
-# AWS_ACCESS_KEY_ID = secrets['s3']['accessKey']
-# AWS_SECRET_ACCESS_KEY = secrets['s3']['secretKey']
 AWS_STORAGE_BUCKET_NAME = 'harusijak-static-manage'
 AWS_ACCESS_KEY_ID = os.environ['AwsAccessKey']
 AWS_SECRET_ACCESS_KEY = os.environ['AwsSecretKey']
