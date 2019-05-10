@@ -13,7 +13,6 @@ class Poem(models.Model):
                                related_name="poems", verbose_name='작성자')
     written_date = models.ForeignKey(Date, on_delete=models.DO_NOTHING,
                                      verbose_name="작성 날짜")
-
     align = models.CharField(
         max_length=9,
         choices=(

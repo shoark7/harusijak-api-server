@@ -7,7 +7,6 @@ from subject.models import Subject
 
 
 class Date(models.Model):
-    # date = models.DateField('날짜', unique_for_date=True)
     date = models.DateField('날짜')
     subject = models.ForeignKey(Subject, on_delete=models.DO_NOTHING,
                                 related_name='used_dates', verbose_name="이 날의 주제")
