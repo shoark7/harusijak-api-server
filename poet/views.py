@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
-
-from rest_framework import generics, mixins, serializers, status
+from rest_framework import generics, mixins, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
 )
@@ -47,7 +47,7 @@ class PoetList(APIView):
                             },
                             status=HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class PoetDetail(APIView):
@@ -66,7 +66,7 @@ class PoetDetail(APIView):
     def get(self, request, pk, format=None):
         poet = self.get_object(pk)
         serializer = PoetSerializer(poet, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
@@ -79,15 +79,15 @@ class PoetDetail(APIView):
                 poet.set_password(serializer.data['password'])
                 poet.save()
                 serializer = PoetSerializer(poet, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         poet = self.get_object(pk)
         self.check_object_permissions(request, poet)
         poet.delete()
-        return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Successfully deleted"}, status=HTTP_204_NO_CONTENT)
 
 
 # @api_view(["GET"])
@@ -124,6 +124,6 @@ def current_user(request):
                      'identifier': user.identifier,
                      'nickname': user.nickname,
                      'image': user.image.url if user.image else None,
-                     'description': user.description or '',
+                     'description': user.description or None,
                     },
                     status=HTTP_200_OK)

@@ -1,5 +1,4 @@
-from rest_framework import serializers
-from rest_framework import validators
+from rest_framework import serializers, validators
 
 from .models import Poet
 from poem.models import Poem
@@ -18,6 +17,7 @@ class BasePoetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'pk', 'identifier', 'password', 'nickname',
                   'image', 'description',]
 
+
 class PoetSerializer(BasePoetSerializer):
     poems_all_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
@@ -28,7 +28,7 @@ class PoetSerializer(BasePoetSerializer):
     def __init__(self, *args, **kwargs):
         super(PoetSerializer, self).__init__(*args, **kwargs)
         # Find UniqueValidator and set custom message
-        unique_check_fields = ['identifier', 'nickname', 'pk']
+        unique_check_fields = ['identifier', 'nickname', 'pk',]
         unique_check_messages = ['해당 ID는 이미 존재합니다.', '해당 필명은 이미 존재합니다.',
                                 '개인의 고유 PK는 변경할 수 없습니다.',]
 
@@ -60,43 +60,3 @@ class PoetSerializer(BasePoetSerializer):
 
                   'poems_all_count', 'poems_displayed_count', 'subscribed_count',
                   'keeped_count', 'likes_count', ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class PoetCreateSerializer(serializers.Serializer):
-    # identifier = serializers.CharField()
-    # password = serializers.CharField(style={'input_type': 'password'})
-    # password_conf = serializers.CharField(style={'input_type': 'password'}, required=False)
-    # nickname = serializers.CharField()
-    # description = serializers.CharField(required=False)
-    # image = serializers.ImageField(max_length=None, allow_empty_file=True,
-                                  # required=False, use_url=True)
-
-    # def create(self, validated_data):
-        # try:
-            # poet = Poet.objects.create_user(**validated_data)
-        # except:
-            # raise serializers.ValidationError("ID 또는 Nickname이 중복되거나 다른 필드에 문제가"
-                                              # "있습니다. 다시 입력하세요.")
-        # return poet

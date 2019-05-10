@@ -6,7 +6,8 @@ from harusijak.storage_backends import PoetMediaStorage
 
 
 class PoetManager(BaseUserManager):
-    def create_user(self, identifier, nickname, password, description=None, image=None, *args, **kwargs):
+    def create_user(self, identifier, nickname, password,
+                    description=None, image=None, *args, **kwargs):
         if not identifier or not nickname or not password:
             raise ValueError("Nickname and identifier should not be empty")
 
