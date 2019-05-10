@@ -11,9 +11,6 @@ class Poem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     writer = models.ForeignKey(Poet, on_delete=models.CASCADE,
                                related_name="poems", verbose_name='작성자')
-    # subject = models.CharField('주제', max_length=20, blank=True, default='자유주제')
-
-    # written_date = models.DateField('작성 날짜', auto_now_add=True)
     written_date = models.ForeignKey(Date, on_delete=models.DO_NOTHING,
                                      verbose_name="작성 날짜")
 

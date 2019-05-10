@@ -2,7 +2,6 @@ from datetime import date as dt
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
-
 from rest_framework import generics, mixins, serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -25,14 +24,13 @@ class PoemList(mixins.ListModelMixin,
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
-        data = list(serializer.data)
+        data = serializer.data
         for item in data:
-            item['do_like'] = request.user.is_authenticated and \
-                                Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-            item['do_dislike'] = request.user.is_authenticated and \
-                                Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-        return self.get_paginated_response(data) if page else Response(data)
+            item['do_like'] = Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
+            item['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
 
+        return self.get_paginated_response(data)
+        # return self.get_paginated_response(data) if page else Response(data)
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -40,8 +38,12 @@ class PoemList(mixins.ListModelMixin,
     def perform_create(self, serializer):
         today = dt.today()
         date = Date.get_or_create(today)
-        serializer.save(written_date=date, writer=self.request.user)
-        # serializer.save(displayed=True)
+        if 'displayed' in serializer.initial_data \
+            and serializer.initial_data['displayed'] == False:
+            displayed = False
+        else:
+            displayed = True
+        serializer.save(displayed=displayed, written_date=date, writer=self.request.user)
 
 
 class PoemDetail(mixins.RetrieveModelMixin,
@@ -64,11 +66,9 @@ class PoemDetail(mixins.RetrieveModelMixin,
         serializer_context = {'request': request}
         serializer = PoemSerializer(poem, context=serializer_context)
 
-        data = dict(serializer.data)
-        data['do_like'] = request.user.is_authenticated and \
-                            Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
-        data['do_dislike'] = request.user.is_authenticated and \
-                            Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
+        data = serializer.data
+        data['do_like'] = Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
+        data['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
         return Response(data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
@@ -77,8 +77,13 @@ class PoemDetail(mixins.RetrieveModelMixin,
         serializer_context = {'request': request}
         serializer = PoemSerializer(poem, context=serializer_context, data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            data = dict(serializer.data)
+            if 'displayed' in serializer.initial_data:
+                displayed = serializer.initial_data['displayed']
+            else:
+                displayed = poem.displayed
+
+            serializer.save(displayed=displayed)
+            data = serializer.data
             data['do_like'] = Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
             data['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
             return Response(data, status=status.HTTP_200_OK)

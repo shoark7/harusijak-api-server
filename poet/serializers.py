@@ -2,13 +2,18 @@ from rest_framework import serializers, validators
 
 from .models import Poet
 from poem.models import Poem
-from poem.serializers import PoemSerializer
 
 
-class SimplePoetSerializer(serializers.ModelSerializer):
+class SimplePoetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Poet
-        fields = ('id', 'nickname',)
+        fields = ('url', 'id', 'nickname', 'image')
+
+
+# class SimplePoetSerializer(serializers.ModelSerializer):
+    # class Meta:
+        # model = Poet
+        # fields = ('id', 'nickname',)
 
 
 class BasePoetSerializer(serializers.HyperlinkedModelSerializer):
