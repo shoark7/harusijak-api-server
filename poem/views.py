@@ -26,8 +26,8 @@ class PoemList(mixins.ListModelMixin,
         serializer = self.get_serializer(page, many=True)
         data = serializer.data
         for item in data:
-            item['do_like'] = Like.objects.filter(poet=request.user, poem__pk=item['id']).exists()
-            item['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=item['id']).exists()
+            item['do_like'] = Like.objects.filter(poet__pk=request.user.id, poem__pk=item['id']).exists()
+            item['do_dislike'] = Dislike.objects.filter(poet__pk=request.user.id, poem__pk=item['id']).exists()
 
         return self.get_paginated_response(data)
         # return self.get_paginated_response(data) if page else Response(data)
@@ -67,8 +67,8 @@ class PoemDetail(mixins.RetrieveModelMixin,
         serializer = PoemSerializer(poem, context=serializer_context)
 
         data = serializer.data
-        data['do_like'] = Like.objects.filter(poet=request.user, poem__pk=data['id']).exists()
-        data['do_dislike'] = Dislike.objects.filter(poet=request.user, poem__pk=data['id']).exists()
+        data['do_like'] = Like.objects.filter(poet__pk=request.user.id, poem__pk=data['id']).exists()
+        data['do_dislike'] = Dislike.objects.filter(poet__pk=request.user.id, poem__pk=data['id']).exists()
         return Response(data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
