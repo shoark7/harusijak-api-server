@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
+
 from rest_framework import generics, mixins, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
@@ -71,7 +72,8 @@ class PoetDetail(APIView):
     def put(self, request, pk, format=None):
         poet = self.get_object(pk)
         self.check_object_permissions(request, poet)
-        serializer = PoetSerializer(poet, context={'request': request}, data=request.data, partial=True)
+        serializer = PoetSerializer(poet, context={'request': request},
+                                    data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -90,29 +92,18 @@ class PoetDetail(APIView):
         return Response({"message": "Successfully deleted"}, status=HTTP_204_NO_CONTENT)
 
 
-# @api_view(["GET"])
-# @permission_classes((ReadOnly,))
-# def poems_of(request, pk):
-    # poems = Poem.objects.filter(writer=pk)
-    # serializer = PoemSerializer(poems, context={'request': request}, many=True)
-    # return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class Poems_of(mixins.ListModelMixin,
-               generics.GenericAPIView):
-    # queryset = Poem.objects.all()
-    serializer_class = PoemSerializer
+# class Poems_of(APIView):
+class Poems_of(mixins.ListModelMixin, generics.GenericAPIView):
     permission_classes = (ReadOnly,)
+    serializer_class = PoemSerializer
 
-    def get_queryset(self, pk):
+    def get_queryset(self):
+        pk = self.kwargs['pk']
         poet = get_object_or_404(Poet, pk=pk)
         return poet.poems.all()
 
     def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset(kwargs['pk']))
-        page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(queryset, many=True)
-        return self.get_paginated_response(serializer.data) if page else Response(serializer.data)
+        return self.list(request, *args, **kwargs)
 
 
 @api_view(["GET"])
@@ -127,3 +118,50 @@ def current_user(request):
                      'description': user.description or None,
                     },
                     status=HTTP_200_OK)
+
+
+class PoetsSubscribing(generics.ListAPIView):
+    permission_classes = (ReadOnly,)
+    serializer_class = PoetSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        poet = get_object_or_404(Poet, pk=pk)
+        return poet.subscribing_to.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+@api_view(['POST'])
+@permission_classes((IsOneself,))
+def toggle_subscribe(request, pk):
+    try:
+        target_nickname = request.data['nickname']
+    except KeyError:
+        raise Http404("A poet with that nickname doesn't exist")
+
+    target = get_object_or_404(Poet, nickname=target_nickname)
+
+    if target in request.user.subscribing_to.all():
+        request.user.subscribing_to.remove(target)
+        message = "Unsubscribed"
+    else:
+        request.user.subscribing_to.add(target)
+        message = "Subscribed"
+
+    return Response({ 'from': request.user.pk, 'to': target.pk, 'message': message },
+                    status=HTTP_200_OK)
+
+
+class PoetsSubscribedBy(generics.ListAPIView):
+    permission_classes = (ReadOnly,)
+    serializer_class = PoetSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        poet = get_object_or_404(Poet, pk=pk)
+        return poet.subscribed_by.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)

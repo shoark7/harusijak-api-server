@@ -10,17 +10,10 @@ class SimplePoetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'id', 'nickname', 'image')
 
 
-# class SimplePoetSerializer(serializers.ModelSerializer):
-    # class Meta:
-        # model = Poet
-        # fields = ('id', 'nickname',)
-
-
 class BasePoetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Poet
-        fields = ['url', 'pk', 'identifier', 'password', 'nickname',
-                  'image', 'description',]
+        fields = ['url', 'pk', 'identifier', 'password', 'nickname', 'image', 'description',]
 
 
 class PoetSerializer(BasePoetSerializer):
