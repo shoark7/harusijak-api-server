@@ -139,7 +139,7 @@ class PeomSearch(generics.ListAPIView):
     serializer_class = PoemSerializer
 
     def get_queryset(self):
-        SUPPORTED_FILTERS = ('poet_nickname', 'content')
+        SUPPORTED_FILTERS = ('poet_nickname', 'subject_title', 'text',)
         FILTERS_AS_STRING = ', '.join(SUPPORTED_FILTERS)
 
         queryset = Poem.objects.all()
@@ -148,12 +148,18 @@ class PeomSearch(generics.ListAPIView):
 
         if filter_by not in SUPPORTED_FILTERS:
             raise exceptions.NotFound("Supproted filters are {}".format(FILTERS_AS_STRING))
-        elif filter_by == 'poet_nickname': # Filter by nickname
+        elif not target:
+            raise exceptions.ParseError("유효한 검색어를 입력해야 합니다.")
+
+        if filter_by == 'poet_nickname':    # Filter by nickname
             queryset = queryset.filter(writer__nickname__contains=target)
-        elif filter_by == 'content':       # Filter by subject and title
+        elif filter_by == 'subject_title':  # Filter by subject and title
             queryset = queryset.filter(
                 Q(title__contains=target) | Q(written_date__subject__subject__contains=target)
             )
+        elif filter_by == 'text':   # Filter by poems' content
+            queryset = queryset.filter(content__icontains=target)
+
         return queryset
 
     def get(self, request, *args, **kwargs):
