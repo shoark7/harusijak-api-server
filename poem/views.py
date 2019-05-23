@@ -149,7 +149,7 @@ class PeomSearch(generics.ListAPIView):
         if filter_by not in SUPPORTED_FILTERS:
             raise exceptions.NotFound("Supproted filters are {}".format(FILTERS_AS_STRING))
         elif filter_by == 'poet_nickname': # Filter by nickname
-            queryset = queryset.filter(writer__nickname=target)
+            queryset = queryset.filter(writer__nickname__contains=target)
         elif filter_by == 'content':       # Filter by subject and title
             queryset = queryset.filter(
                 Q(title__contains=target) | Q(written_date__subject__subject__contains=target)
