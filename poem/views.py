@@ -1,8 +1,10 @@
 from datetime import date as dt
 
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, mixins, serializers, status
+from rest_framework import exceptions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -10,12 +12,13 @@ from rest_framework.response import Response
 from .models import Dislike, Like, Poem
 from .serializers import PoemSerializer
 from .permissions import IsWriterOrReadOnly
+from poet.permissons import ReadOnly
 from date.models import Date
 
 
 class PoemList(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView):
+               mixins.CreateModelMixin,
+               generics.GenericAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -130,6 +133,34 @@ def toggle_dislike(request, pk):
         return Response({"message": "Successfully Dislike toggled on"}, status=status.HTTP_200_OK)
 
 
+# About poems' search by filters
+class PeomSearch(generics.ListAPIView):
+    permission_classes = (ReadOnly,)
+    serializer_class = PoemSerializer
+
+    def get_queryset(self):
+        SUPPORTED_FILTERS = ('poet_nickname', 'content')
+        FILTERS_AS_STRING = ', '.join(SUPPORTED_FILTERS)
+
+        queryset = Poem.objects.all()
+        filter_by = self.request.query_params.get('filter_by', None)
+        target = self.request.query_params.get('target', None)
+
+        if filter_by not in SUPPORTED_FILTERS:
+            raise exceptions.NotFound("Supproted filters are {}".format(FILTERS_AS_STRING))
+        elif filter_by == 'poet_nickname': # Filter by nickname
+            queryset = queryset.filter(writer__nickname=target)
+        elif filter_by == 'content':       # Filter by subject and title
+            queryset = queryset.filter(
+                Q(title__contains=target) | Q(written_date__subject__subject__contains=target)
+            )
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+# About today's information section
 @api_view(['GET'])
 def about_today(request):
     today = Date.get_or_create()

@@ -5,12 +5,6 @@ from poet.serializers import SimplePoetSerializer
 from .models import Poem
 
 
-# class SimplePoetSerializer(serializers.HyperlinkedModelSerializer):
-    # class Meta:
-        # model = Poet
-        # fields = ('url', 'id', 'nickname', 'image')
-
-
 class PoemSerializer(serializers.HyperlinkedModelSerializer):
     writer = SimplePoetSerializer(required=False)
     subject = serializers.SerializerMethodField()
